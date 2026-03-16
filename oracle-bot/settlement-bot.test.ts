@@ -639,6 +639,9 @@ describe('fetchPriceFromYahoo', () => {
   });
 
   it('returns null when the response shape is entirely unexpected', async () => {
+    // Yahoo Finance returns a top-level error object (e.g. for unknown tickers)
+    // instead of the usual chart.result structure. The function should handle
+    // this gracefully via optional chaining and return null rather than throw.
     jest.spyOn(global, 'fetch').mockResolvedValueOnce({
       ok: true,
       json: async () => ({ error: { code: 'Not Found', description: 'No fundamentals data found' } }),
