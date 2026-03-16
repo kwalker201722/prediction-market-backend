@@ -67,6 +67,31 @@ export interface Holding {
   lastPrice: number;
 }
 
+// ---------------------------------------------------------------------------
+// Oracle / Settlement
+// ---------------------------------------------------------------------------
+
+export interface MarketConfig {
+  /** On-chain market identifier */
+  marketId: string;
+  /** Ticker symbol (e.g. "AAPL", "BTC", "SPY") */
+  ticker: string;
+  /** ISO date of market expiry/close (YYYY-MM-DD) */
+  expiryDate: string;
+}
+
+export type MarketStatus = 'pending' | 'queued' | 'settled' | 'disputed' | 'failed';
+
+export interface MarketSettlement extends MarketConfig {
+  status: MarketStatus;
+  queuedAt?: string;
+  settledAt?: string;
+  disputedAt?: string;
+  txHash?: string;
+  failureReason?: string;
+  disputeReason?: string;
+}
+
 export interface JwtPayload {
   userId: string;
   email: string;
