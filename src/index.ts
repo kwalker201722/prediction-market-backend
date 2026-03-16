@@ -8,6 +8,7 @@ import userRoutes from './routes/users';
 import paymentRoutes from './routes/payments';
 import blockchainRoutes from './routes/blockchain';
 import profileRoutes from './routes/profile';
+import settlementRoutes from './routes/settlement';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -60,6 +61,7 @@ app.use('/users', userRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/blockchain', blockchainRoutes);
 app.use('/profile', profileRoutes);
+app.use('/settlement', settlementRoutes);
 
 // ── 404 handler ──────────────────────────────────────────────────────────────
 app.use((_req, res) => {
