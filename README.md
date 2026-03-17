@@ -12,12 +12,39 @@ Production-ready Node.js + Express backend API for a prediction market platform 
 | Auth | JWT (email) + MetaMask wallet verification |
 | Payments | Stripe API (fiat → ETH) |
 | Blockchain | ethers.js → Sepolia testnet |
+| Smart Contract | Solidity 0.8.20 (`src/PredictionMarket.sol`) |
+| Contract Tests | Hardhat (`npx hardhat test`) |
+| Oracle Bot | `oracle-bot/settlement-bot.ts` + `oracle-bot/oracleBot.js` |
+| Admin UI | Vite + React (`admin-ui/`) |
 | Deployment | Railway.app |
 
 ## Smart Contract
 
+`src/PredictionMarket.sol` – Solidity 0.8.20 contract providing:
+
+- `resolveMarket(marketId, outcome, price, signature, evidenceHash)` – EIP-191 signed settlement
+- Authorized oracle/admin signer list (`addOracle`, `removeOracle`)
+- On-chain state: outcome, price, resolver address, settled/disputed flags
+- `MarketResolved` / `MarketDisputed` events
+- 48-hour dispute window (Step 4 extension point)
+
+### Deployed contract
+
 - **Address:** `0xE88582edFEc4CFb3B1A3ABa5A79c55B8C1d770fc`
 - **Network:** Sepolia testnet
+
+### Compile & test the contract
+
+```bash
+# Install Hardhat (included in devDependencies)
+npm install
+
+# Compile
+npm run compile:contracts   # → artifacts/
+
+# Run Hardhat tests
+npm run test:contracts      # → test/PredictionMarket.test.js
+```
 
 ## Quick Start
 
@@ -194,3 +221,32 @@ Example crontab (run every day at 18:05 UTC after US market close):
 | `POLYGON_API_KEY` | — | Polygon.io API key |
 | `FMP_API_KEY` | — | Financial Modeling Prep API key |
 | `MARKETS_TO_SETTLE` | — | JSON array of `{marketId, ticker, expiryDate}` objects |
+
+---
+
+## Admin UI
+
+`admin-ui/` is a minimal Vite + React dashboard for managing market settlements without writing any code.
+
+### Features
+
+- **Login** – authenticates against the Express `/auth/login` endpoint.
+- **Market List** – shows `pending` and `queued` markets; lets admins queue them for bot settlement.
+- **Settlement Panel** – approve a settlement, paste the TX hash, or open a dispute.
+
+### Running the Admin UI
+
+```bash
+cd admin-ui
+npm install
+cp .env.example .env   # edit VITE_API_URL if backend runs on a different port
+
+# Development (http://localhost:3001, proxies API calls to localhost:3000)
+npm run dev
+
+# Production build
+npm run build
+npm run preview
+```
+
+See `admin-ui/README.md` for full documentation.
